@@ -43,7 +43,7 @@ exports['entry_action1'] = function (test)
   function Keyboard:initialize()
     local default = Default:new()
     local capsLocked = CapsLocked:new()
-    self:addStates{default, capsLocked}
+    self:addTopStates{default, capsLocked}
     self.state = default
     self.defaultEntryFired = false
     self.defaultExitFired = false

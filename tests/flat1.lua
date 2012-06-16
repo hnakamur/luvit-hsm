@@ -35,7 +35,7 @@ exports['flat1'] = function (test)
   function Keyboard:initialize()
     local default = Default:new()
     local capsLocked = CapsLocked:new()
-    self:addStates{default, capsLocked}
+    self:addTopStates{default, capsLocked}
     self.state = default
     default:on('LowerCaseScanCode', function(keyName)
       self.output = string.lower(keyName)

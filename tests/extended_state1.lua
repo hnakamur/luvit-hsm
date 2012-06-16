@@ -39,7 +39,7 @@ exports['extended_state1'] = function (test)
     local default = Default:new()
     local capsLocked = CapsLocked:new()
     local final = Final:new()
-    self:addStates{default, capsLocked, final}
+    self:addTopStates{default, capsLocked, final}
     self.state = default
     self.keyCount = 5;
   end

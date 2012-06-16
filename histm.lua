@@ -1,4 +1,5 @@
 local core = require("core")
+local table = require("table")
 local Object = core.Object
 local Emitter = core.Emitter
 
@@ -16,35 +17,46 @@ local histm = {}
 local State = Emitter:extend()
 histm.State = State
 
---function State:addChild(child)
---  self.children = self.children or {}
---  self.children[#self.children + 1] = child
---  child.parent = self
---end
+function State:initialize(children)
+  self.subStates = {}
+  if children ~= nil then
+    for _, child in pairs(children) do
+      child.parent = self
+      self.subStates[#self.subStates + 1] = child
+    end
+  end
+end
 
 local StateMachine = Object:extend()
 histm.StateMachine = StateMachine
 
-function StateMachine:initialize()
-  self.statesMap = {}
+local function _addStateToMap(self, state)
+  self.statesMap[state.name] = state
+  state.machine = self
+  for i, child in ipairs(state.subStates) do
+    _addStateToMap(self, child)
+  end
 end
 
-function StateMachine:addStates(states)
-  self.statesMap = self.statesMap or {}
-  for _, state in pairs(states) do
-    self.statesMap[state.name] = state
-    state.machine = self
+function StateMachine:addTopStates(states)
+  self.statesMap = {}
+  for i, state in ipairs(states) do
+    _addStateToMap(self, state)
   end
 end
 
 function StateMachine:react(...)
-  local newStateName = self.state:react(...)
-  if newStateName then
-    if newStateName ~= self.state.name then
-      self:_transit(newStateName)
+  local state = self.state
+  while state ~= nil do
+    local newStateName = state:react(...)
+    if newStateName ~= nil then -- consumed
+      if newStateName ~= state.name then
+        self:_transit(newStateName)
+      end
+      break
+    else
+      state = state.parent
     end
-  else
-    -- TODO: propagate event to parent machine
   end
 end
 
