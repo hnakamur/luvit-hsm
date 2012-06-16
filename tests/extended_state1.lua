@@ -1,9 +1,9 @@
 local exports = {}
 
 local string = require('string')
-local hsm = require('../hsm.lua')
-local State = hsm.State
-local StateMachine = hsm.StateMachine
+local histm = require('../histm.lua')
+local State = histm.State
+local StateMachine = histm.StateMachine
 
 exports['extended_state1'] = function (test)
   local Default = State:extend()

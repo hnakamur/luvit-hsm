@@ -2,10 +2,10 @@ local core = require("core")
 local Object = core.Object
 local Emitter = core.Emitter
 
-local hsm = {}
+local histm = {}
 
 --local Event = Object:extend()
---hsm.Event = Event
+--histm.Event = Event
 --
 --function Event:initialize(type, parameters)
 --  self.type = type
@@ -14,7 +14,7 @@ local hsm = {}
 
 
 local State = Emitter:extend()
-hsm.State = State
+histm.State = State
 
 --function State:addChild(child)
 --  self.children = self.children or {}
@@ -23,7 +23,7 @@ hsm.State = State
 --end
 
 local StateMachine = Object:extend()
-hsm.StateMachine = StateMachine
+histm.StateMachine = StateMachine
 
 function StateMachine:initialize()
   self.statesMap = {}
@@ -52,4 +52,4 @@ function StateMachine:_transit(newStateName)
   self.state = self.statesMap[newStateName]
 end
 
-return hsm
+return histm
