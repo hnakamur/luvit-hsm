@@ -33,6 +33,7 @@ function StateMachine:addStates(states)
   self.statesMap = self.statesMap or {}
   for _, state in pairs(states) do
     self.statesMap[state.name] = state
+    state.machine = self
   end
 end
 
