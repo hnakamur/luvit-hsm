@@ -49,7 +49,9 @@ function StateMachine:react(...)
 end
 
 function StateMachine:_transit(newStateName)
+  if self.state and self.state.exit then self.state:exit() end
   self.state = self.statesMap[newStateName]
+  if self.state and self.state.entry then self.state:entry() end
 end
 
 return histm
