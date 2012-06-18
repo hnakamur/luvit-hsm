@@ -19,10 +19,10 @@ histm.State = State
 
 function State:initialize(children)
   if children ~= nil then
-    self.subStates = {}
+    self.substates = {}
     for _, child in pairs(children) do
-      child.parent = self
-      self.subStates[#self.subStates + 1] = child
+      child.superstate = self
+      self.substates[#self.substates + 1] = child
     end
   end
 end
@@ -31,7 +31,7 @@ function State:isAncestorOf(state)
   local s = state
   while s ~= nil do
     if self == s then return true end
-    s = s.parent
+    s = s.superstate
   end
   return false
 end
@@ -42,7 +42,7 @@ function State:getLCA(state)
     if s:isAncestorOf(self) then
       return s
     end
-    s = s.parent
+    s = s.superstate
   end
   return nil
 end
@@ -53,8 +53,8 @@ histm.StateMachine = StateMachine
 local function _addStateToMap(self, state)
   self.statesMap[state.name] = state
   state.machine = self
-  if state.subStates then
-    for i, child in ipairs(state.subStates) do
+  if state.substates then
+    for i, child in ipairs(state.substates) do
       _addStateToMap(self, child)
     end
   end
@@ -77,7 +77,7 @@ function StateMachine:react(...)
       end
       break
     else
-      state = state.parent
+      state = state.superstate
     end
   end
 end
