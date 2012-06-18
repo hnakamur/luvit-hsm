@@ -27,6 +27,26 @@ function State:initialize(children)
   end
 end
 
+function State:isAncestorOf(state)
+  local s = state
+  while s ~= nil do
+    if self == s then return true end
+    s = s.parent
+  end
+  return false
+end
+
+function State:getLCA(state)
+  local s = state
+  while s ~= nil do
+    if s:isAncestorOf(self) then
+      return s
+    end
+    s = s.parent
+  end
+  return nil
+end
+
 local StateMachine = Object:extend()
 histm.StateMachine = StateMachine
 
