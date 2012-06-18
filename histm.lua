@@ -47,6 +47,16 @@ function State:getLCA(state)
   return nil
 end
 
+function State:getAncestorsTo(ancestor)
+  local ancestors = {}
+  local s = self
+  while s ~= ancestor do
+    ancestors[#ancestors + 1] = s
+    s = s.superstate
+  end
+  return ancestors
+end
+
 local StateMachine = Object:extend()
 histm.StateMachine = StateMachine
 
@@ -83,9 +93,22 @@ function StateMachine:react(...)
 end
 
 function StateMachine:_transit(newStateName)
-  if self.state and self.state.exit then self.state:exit() end
-  self.state = self.statesMap[newStateName]
-  if self.state and self.state.entry then self.state:entry() end
+  local newState = self.statesMap[newStateName]
+  local lca = self.state:getLCA(newState)
+
+  local s = self.state
+  while s ~= lca do
+    if s.exit then s:exit() end
+    s = s.superstate
+  end
+
+  local ancestors = newState:getAncestorsTo(lca)
+  for i = #ancestors, 1, -1 do
+    s = ancestors[i]
+    if s.entry then s:entry() end
+  end
+
+  self.state = newState
 end
 
 return histm

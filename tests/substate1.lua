@@ -1,6 +1,7 @@
 local exports = {}
 
 local string = require('string')
+local table = require('table')
 local histm = require('../histm.lua')
 local State = histm.State
 local StateMachine = histm.StateMachine
@@ -18,6 +19,10 @@ exports['substate1'] = function (test)
 
   function On:react(keyName)
     return self.keyMap[keyName]
+  end
+
+  function On:exit()
+    table.insert(self.machine.log, 'On:exit')
   end
 
   local Operand1 = State:extend()
@@ -59,6 +64,10 @@ exports['substate1'] = function (test)
 
   function OpEntered:react(keyName)
     return self.keyMap[keyName]
+  end
+
+  function OpEntered:exit()
+    table.insert(self.machine.log, 'OpEntered:exit')
   end
 
   local Operand2 = State:extend()
@@ -106,6 +115,10 @@ exports['substate1'] = function (test)
   local Final = State:extend()
   Final.name = 'Final'
 
+  function Final:entry()
+    table.insert(self.machine.log, 'Final:entry')
+  end
+
   function Result:initialize(children)
     State.initialize(self, children)
   end
@@ -121,6 +134,7 @@ exports['substate1'] = function (test)
     local final = Final:new()
     self:addTopStates{on, final}
     self.state = operand1
+    self.log = {}
   end
 
   local calculator = Calculator:new()
@@ -128,6 +142,8 @@ exports['substate1'] = function (test)
   test.equal(calculator.state.name, 'OpEntered')
   calculator:react('off')
   test.equal(calculator.state.name, 'Final')
+  test.equal('OpEntered:exit,On:exit,Final:entry',
+    table.concat(calculator.log, ','))
   test.done()
 end
 
