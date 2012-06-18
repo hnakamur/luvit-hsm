@@ -18,8 +18,8 @@ local State = Emitter:extend()
 histm.State = State
 
 function State:initialize(children)
-  self.subStates = {}
   if children ~= nil then
+    self.subStates = {}
     for _, child in pairs(children) do
       child.parent = self
       self.subStates[#self.subStates + 1] = child
@@ -33,8 +33,10 @@ histm.StateMachine = StateMachine
 local function _addStateToMap(self, state)
   self.statesMap[state.name] = state
   state.machine = self
-  for i, child in ipairs(state.subStates) do
-    _addStateToMap(self, child)
+  if state.subStates then
+    for i, child in ipairs(state.subStates) do
+      _addStateToMap(self, child)
+    end
   end
 end
 
