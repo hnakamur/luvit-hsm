@@ -1,114 +1,132 @@
 local core = require("core")
-local table = require("table")
 local Object = core.Object
-local Emitter = core.Emitter
 
 local histm = {}
 
---local Event = Object:extend()
---histm.Event = Event
---
---function Event:initialize(type, parameters)
---  self.type = type
---  self.parameters = parameters
---end
-
-
-local State = Emitter:extend()
-histm.State = State
-
-function State:initialize(children)
-  if children ~= nil then
-    self.substates = {}
-    for _, child in pairs(children) do
-      child.superstate = self
-      self.substates[#self.substates + 1] = child
-    end
+local function clone(table)
+  local ret = {}
+  for k, v in pairs(table) do
+    ret[k] = v
   end
+  return ret
 end
 
-function State:isAncestorOf(state)
-  local s = state
-  while s ~= nil do
-    if self == s then return true end
-    s = s.superstate
-  end
-  return false
-end
-
-function State:getLCA(state)
-  local s = state
-  while s ~= nil do
-    if s:isAncestorOf(self) then
-      return s
+local function indexOf(table, elem)
+  for i = 1, #table do
+    if table[i] == elem then
+      return i
     end
-    s = s.superstate
   end
   return nil
 end
 
-function State:getAncestorsTo(ancestor)
-  local ancestors = {}
-  local s = self
-  while s ~= ancestor do
-    ancestors[#ancestors + 1] = s
-    s = s.superstate
+local function isAncestorOf(ancestor, descendant)
+  if descendant then
+    local path = descendant.path
+    for i = #path, 1, -1 do
+
+      if path[i] == ancestor then
+        return true
+      end
+    end
   end
-  return ancestors
+  return false
+end
+
+local function getLCA(a, b)
+  if a then
+    local path = a.path
+    for i = #path, 1, -1 do
+      if isAncestorOf(path[i], b) then
+        return path[i]
+      end
+    end
+  end
+  return nil
 end
 
 local StateMachine = Object:extend()
-histm.StateMachine = StateMachine
 
-local function _addStateToMap(self, state)
-  self.statesMap[state.name] = state
-  state.machine = self
-  if state.substates then
-    for i, child in ipairs(state.substates) do
-      _addStateToMap(self, child)
-    end
+function StateMachine:initialize(opts)
+  if opts.states then
+    self:setStates(opts.states)
+  end
+  if opts.initStateName then
+    self.state = self.statesMap[opts.initStateName]
   end
 end
 
-function StateMachine:addTopStates(states)
-  self.statesMap = {}
-  for i, state in ipairs(states) do
-    _addStateToMap(self, state)
+function StateMachine:setStates(states)
+  local statesMap = {}
+
+  function addState(name, state, parentPath)
+    statesMap[name] = state
+    state.name = name
+
+    local path = clone(parentPath)
+    path[#path + 1] = state
+    state.path = path
+
+    if state.substates then
+      for childName, child in pairs(state.substates) do
+        addState(childName, child, path)
+      end
+    end
   end
+
+  if states then
+    for name, state in pairs(states) do
+      addState(name, state, {})
+    end
+  end
+
+  self.states = states
+  self.statesMap = statesMap
 end
 
 function StateMachine:react(...)
-  local state = self.state
-  while state ~= nil do
-    local newStateName = state:react(...)
+  local path = self.state.path
+  for i = #path, 1, -1 do
+    local state = path[i]
+    local newStateName = state.react(...)
     if newStateName ~= nil then -- consumed
       if newStateName ~= state.name then
         self:_transit(newStateName)
       end
       break
-    else
-      state = state.superstate
     end
   end
 end
 
 function StateMachine:_transit(newStateName)
   local newState = self.statesMap[newStateName]
-  local lca = self.state:getLCA(newState)
+  local lca = getLCA(self.state, newState)
 
-  local s = self.state
-  while s ~= lca do
-    if s.exit then s:exit() end
-    s = s.superstate
+  local path1 = self.state.path
+  for i = #path1, 1, -1 do
+    local s = path1[i]
+    if s.exit then
+      s.exit()
+    end
+    if s == lca then
+      break
+    end
   end
 
-  local ancestors = newState:getAncestorsTo(lca)
-  for i = #ancestors, 1, -1 do
-    s = ancestors[i]
-    if s.entry then s:entry() end
+  local path2 = newState.path
+  local i = indexOf(path2, lca) or 1
+  while i <= #path2 do
+    local s = path2[i]
+    if s.entry then
+      s.entry()
+    end
+    i = i + 1
   end
 
   self.state = newState
 end
 
+histm.StateMachine = StateMachine
+histm.isAncestorOf = isAncestorOf
+histm.getLCA = getLCA
 return histm
