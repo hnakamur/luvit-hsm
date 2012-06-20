@@ -35,6 +35,9 @@ exports['substate1'] = function (test)
                 return keyMap[keyName]
               end
             end)(),
+            exit = function()
+              table.insert(self.log, 'Operand1:exit')
+            end
           },
           OpEntered = {
             react = (function()
@@ -55,6 +58,9 @@ exports['substate1'] = function (test)
                 return keyMap[keyName]
               end
             end)(),
+            entry = function()
+              table.insert(self.log, 'OpEntered:entry')
+            end,
             exit = function()
               table.insert(self.log, 'OpEntered:exit')
             end
@@ -102,11 +108,13 @@ exports['substate1'] = function (test)
       }
     }
     self.state = self.statesMap.Operand1
-    self.log = {}
   end
 
   local calculator = Calculator:new()
+  calculator.log = {}
   calculator:react('+')
+  test.equal('Operand1:exit,OpEntered:entry',
+    table.concat(calculator.log, ','))
   test.equal(calculator.state.name, 'OpEntered')
   calculator.log = {}
   calculator:react('off')

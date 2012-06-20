@@ -105,16 +105,16 @@ function StateMachine:_transit(newStateName)
   local path1 = self.state.path
   for i = #path1, 1, -1 do
     local s = path1[i]
-    if s.exit then
-      s.exit()
-    end
     if s == lca then
       break
+    end
+    if s.exit then
+      s.exit()
     end
   end
 
   local path2 = newState.path
-  local i = indexOf(path2, lca) or 1
+  local i = (indexOf(path2, lca) or 0) + 1
   while i <= #path2 do
     local s = path2[i]
     if s.entry then
