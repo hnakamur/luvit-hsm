@@ -1,8 +1,8 @@
 local exports = {}
 
 local string = require('string')
-local histm = require('../histm.lua')
-local StateMachine = histm.StateMachine
+local hsm = require('../hsm.lua')
+local StateMachine = hsm.StateMachine
 
 exports['extended_state1'] = function (test)
   local FragileKeyboard = StateMachine:extend()

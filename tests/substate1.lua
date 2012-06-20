@@ -2,8 +2,8 @@ local exports = {}
 
 local string = require('string')
 local table = require('table')
-local histm = require('../histm.lua')
-local StateMachine = histm.StateMachine
+local hsm = require('../hsm.lua')
+local StateMachine = hsm.StateMachine
 
 exports['substate1'] = function (test)
   local Calculator = StateMachine:extend()
