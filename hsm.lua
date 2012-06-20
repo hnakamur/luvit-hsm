@@ -90,16 +90,16 @@ function StateMachine:react(...)
     local state = path[i]
     local targetStateName = state.react(...)
     if targetStateName ~= nil then -- consumed
-      if targetStateName ~= state.name then
-        self:_transit(targetStateName)
+      local targetState = self.statesMap[targetStateName]
+      if targetState ~= state then
+        self:_transit(targetState)
       end
       break
     end
   end
 end
 
-function StateMachine:_transit(targetStateName)
-  local targetState = self.statesMap[targetStateName]
+function StateMachine:_transit(targetState)
   local lca = getLCA(self.state, targetState)
   self:_runExitActions(self.state, lca)
   self:_runEntryActions(lca, targetState)
