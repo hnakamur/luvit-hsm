@@ -5,14 +5,14 @@ local hsm = require('../hsm.lua')
 local StateMachine = hsm.StateMachine
 
 exports['initial'] = function (test)
-  local door
-  door = StateMachine:new{
-    initStateName = 'initial',
-    states = {
+  local Door = StateMachine:extend()
+
+  function Door:initialize()
+    self:setStates{
       initial = {
         react = function(event)
           if event == 'create' then
-            door:addLog('initial')
+            self:addLog('initial')
             return 'open'
           else
             return nil
@@ -21,43 +21,45 @@ exports['initial'] = function (test)
       },
       open = {
         entry = function()
-          door:addLog('open_entry')
+          self:addLog('open_entry')
         end,
         react = function(event)
           if event == 'close' then
-            door:addLog('open_react')
+            self:addLog('open_react')
             return 'closed'
           else
             return nil
           end
         end,
         exit = function()
-          door:addLog('open_exit')
+          self:addLog('open_exit')
         end
       },
       closed = {
         entry = function()
-          door:addLog('closed_entry')
+          self:addLog('closed_entry')
         end,
         react = function(event)
           if event == 'open' then
-            door:addLog('closed_react')
+            self:addLog('closed_react')
             return 'open'
           else
             return nil
           end
         end,
         exit = function()
-          door:addLog('closed_exit')
+          self:addLog('closed_exit')
         end
       }
     }
-  }
+    self.state = self.statesMap['initial']
+  end
 
-  function door:addLog(log)
+  function Door:addLog(log)
     table.insert(self.log, log)
   end
 
+  local door = Door:new()
   door.log = {}
   door:react('create')
   test.equal('initial,open_entry', table.concat(door.log, ','))
