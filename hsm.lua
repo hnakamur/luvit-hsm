@@ -88,23 +88,28 @@ function StateMachine:react(...)
   local path = self.state.path
   for i = #path, 1, -1 do
     local state = path[i]
-    local newStateName = state.react(...)
-    if newStateName ~= nil then -- consumed
-      if newStateName ~= state.name then
-        self:_transit(newStateName)
+    local targetStateName = state.react(...)
+    if targetStateName ~= nil then -- consumed
+      if targetStateName ~= state.name then
+        self:_transit(targetStateName)
       end
       break
     end
   end
 end
 
-function StateMachine:_transit(newStateName)
-  local newState = self.statesMap[newStateName]
-  local lca = getLCA(self.state, newState)
+function StateMachine:_transit(targetStateName)
+  local targetState = self.statesMap[targetStateName]
+  local lca = getLCA(self.state, targetState)
+  self:_runExitActions(self.state, lca)
+  self:_runEntryActions(lca, targetState)
+  self.state = targetState
+end
 
-  local path1 = self.state.path
-  for i = #path1, 1, -1 do
-    local s = path1[i]
+function StateMachine:_runExitActions(sourceState, lca)
+  local path = sourceState.path
+  for i = #path, 1, -1 do
+    local s = path[i]
     if s == lca then
       break
     end
@@ -112,18 +117,18 @@ function StateMachine:_transit(newStateName)
       s.exit()
     end
   end
+end
 
-  local path2 = newState.path
-  local i = (indexOf(path2, lca) or 0) + 1
-  while i <= #path2 do
-    local s = path2[i]
+function StateMachine:_runEntryActions(lca, targetState)
+  local path = targetState.path
+  local i = (indexOf(path, lca) or 0) + 1
+  while i <= #path do
+    local s = path[i]
     if s.entry then
       s.entry()
     end
     i = i + 1
   end
-
-  self.state = newState
 end
 
 hsm.StateMachine = StateMachine
