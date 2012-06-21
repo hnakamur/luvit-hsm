@@ -73,10 +73,8 @@ function StateMachine:setStates(states)
     end
   end
 
-  if states then
-    for name, state in pairs(states) do
-      addState(name, state, {})
-    end
+  for name, state in pairs(states) do
+    addState(name, state, {})
   end
 
   self.states = states
