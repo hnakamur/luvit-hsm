@@ -1,9 +1,9 @@
 local core = require("core")
-local Object = core.Object
+local Emitter = core.Emitter
 
 local hsm = {}
 
-local StateMachine = Object:extend()
+local StateMachine = Emitter:extend()
 
 function StateMachine:initialize(opts)
   if opts.states then
@@ -90,7 +90,7 @@ local function getLCA(a, b)
   return nil
 end
 
-local HierarchicalStateMachine = Object:extend()
+local HierarchicalStateMachine = Emitter:extend()
 
 function HierarchicalStateMachine:initialize(opts)
   if opts.states then
