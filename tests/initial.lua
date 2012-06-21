@@ -52,7 +52,7 @@ exports['initial'] = function (test)
         end
       }
     }
-    self.state = self.statesMap['initial']
+    self.state = self.states['initial']
   end
 
   function Door:addLog(log)

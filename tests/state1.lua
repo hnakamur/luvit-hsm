@@ -25,9 +25,9 @@ exports['isAncestorOf'] = function (test)
       }
     }
   }
-  local e = machine.statesMap.e
-  local d = machine.statesMap.d
-  local a = machine.statesMap.a
+  local e = machine.states.e
+  local d = machine.states.d
+  local a = machine.states.a
 
   test.equal(false, hsm.isAncestorOf(e, nil))
   test.equal(true, hsm.isAncestorOf(e, e))
@@ -57,9 +57,9 @@ exports['getLCA'] = function (test)
       }
     }
   }
-  local e = machine.statesMap.e
-  local d = machine.statesMap.d
-  local a = machine.statesMap.a
+  local e = machine.states.e
+  local d = machine.states.d
+  local a = machine.states.a
 
   test.ok(hsm.getLCA(e, nil) == nil)
   test.ok(hsm.getLCA(e, d) == d)

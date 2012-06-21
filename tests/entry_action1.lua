@@ -36,7 +36,7 @@ exports['entry_action1'] = function (test)
         end
       }
     }
-    self.state = self.statesMap.Default
+    self.state = self.states.Default
   end
 
   function Keyboard:handleLowerCaseScanCode(keyName)

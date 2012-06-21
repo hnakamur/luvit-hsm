@@ -10,19 +10,19 @@ function StateMachine:initialize(opts)
     self:setStates(opts.states)
   end
   if opts.initStateName then
-    self.state = self.statesMap[opts.initStateName]
+    self.state = self.states[opts.initStateName]
   end
 end
 
 function StateMachine:setStates(states)
-  self.statesMap = states
+  self.states = states
 end
 
 function StateMachine:react(...)
   local state = self.state
   local targetStateName = state.react(...)
   if targetStateName then
-    local targetState = self.statesMap[targetStateName]
+    local targetState = self.states[targetStateName]
     if targetState ~= state then
       self:_transit(targetState)
     end
@@ -97,15 +97,16 @@ function HierarchicalStateMachine:initialize(opts)
     self:setStates(opts.states)
   end
   if opts.initStateName then
-    self.state = self.statesMap[opts.initStateName]
+    self.state = self.states[opts.initStateName]
   end
 end
 
 function HierarchicalStateMachine:setStates(states)
-  local statesMap = {}
+  self.topStates = states
+  self.states = {}
 
   function addState(name, state, parentPath)
-    statesMap[name] = state
+    self.states[name] = state
 
     local path = clone(parentPath)
     path[#path + 1] = state
@@ -121,9 +122,6 @@ function HierarchicalStateMachine:setStates(states)
   for name, state in pairs(states) do
     addState(name, state, {})
   end
-
-  self.states = states
-  self.statesMap = statesMap
 end
 
 function HierarchicalStateMachine:react(...)
@@ -132,7 +130,7 @@ function HierarchicalStateMachine:react(...)
     local state = path[i]
     local targetStateName = state.react(...)
     if targetStateName ~= nil then -- consumed
-      local targetState = self.statesMap[targetStateName]
+      local targetState = self.states[targetStateName]
       if targetState ~= state then
         self:_transit(targetState)
       end
