@@ -61,7 +61,6 @@ function StateMachine:setStates(states)
 
   function addState(name, state, parentPath)
     statesMap[name] = state
-    state.name = name
 
     local path = clone(parentPath)
     path[#path + 1] = state

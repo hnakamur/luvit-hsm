@@ -115,10 +115,10 @@ exports['substate1'] = function (test)
   calculator:react('+')
   test.equal('Operand1:exit,OpEntered:entry',
     table.concat(calculator.log, ','))
-  test.equal(calculator.state.name, 'OpEntered')
+  test.ok(calculator.state == calculator.statesMap.OpEntered)
   calculator.log = {}
   calculator:react('off')
-  test.equal(calculator.state.name, 'Final')
+  test.ok(calculator.state == calculator.statesMap.Final)
   test.equal('OpEntered:exit,On:exit,Final:entry',
     table.concat(calculator.log, ','))
   test.done()

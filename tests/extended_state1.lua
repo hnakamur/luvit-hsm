@@ -59,7 +59,7 @@ exports['extended_state1'] = function (test)
   keyboard:react('CAPS_LOCK')
   keyboard:react('e')
   test.equal(keyboard.output, 'e')
-  test.equal('Final', keyboard.state.name)
+  test.ok(keyboard.state == keyboard.statesMap.Final)
   test.done()
 end
 
