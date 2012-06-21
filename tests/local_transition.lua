@@ -2,11 +2,11 @@ local exports = {}
 
 local table = require('table')
 local hsm = require('../hsm.lua')
-local StateMachine = hsm.StateMachine
+local HierarchicalStateMachine = hsm.HierarchicalStateMachine
 
 exports['local_transition'] = function (test)
   local machine
-  machine = StateMachine:new{
+  machine = HierarchicalStateMachine:new{
     initStateName = 's1',
     states = {
       s1 = {

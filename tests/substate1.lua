@@ -3,10 +3,10 @@ local exports = {}
 local string = require('string')
 local table = require('table')
 local hsm = require('../hsm.lua')
-local StateMachine = hsm.StateMachine
+local HierarchicalStateMachine = hsm.HierarchicalStateMachine
 
 exports['substate1'] = function (test)
-  local Calculator = StateMachine:extend()
+  local Calculator = HierarchicalStateMachine:extend()
 
   function Calculator:initialize()
     self:setStates{

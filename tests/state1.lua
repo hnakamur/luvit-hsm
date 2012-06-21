@@ -2,10 +2,10 @@ local exports = {}
 
 local string = require('string')
 local hsm = require('../hsm.lua')
-local StateMachine = hsm.StateMachine
+local HierarchicalStateMachine = hsm.HierarchicalStateMachine
 
 exports['isAncestorOf'] = function (test)
-  local machine = StateMachine:new{
+  local machine = HierarchicalStateMachine:new{
     states = {
       a = {
         substates = {
@@ -37,7 +37,7 @@ exports['isAncestorOf'] = function (test)
 end
 
 exports['getLCA'] = function (test)
-  local machine = StateMachine:new{
+  local machine = HierarchicalStateMachine:new{
     states = {
       a = {
         substates = {

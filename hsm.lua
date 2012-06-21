@@ -3,6 +3,51 @@ local Object = core.Object
 
 local hsm = {}
 
+local StateMachine = Object:extend()
+
+function StateMachine:initialize(opts)
+  if opts.states then
+    self:setStates(opts.states)
+  end
+  if opts.initStateName then
+    self.state = self.statesMap[opts.initStateName]
+  end
+end
+
+function StateMachine:setStates(states)
+  self.statesMap = states
+end
+
+function StateMachine:react(...)
+  local state = self.state
+  local targetStateName = state.react(...)
+  if targetStateName then
+    local targetState = self.statesMap[targetStateName]
+    if targetState ~= state then
+      self:_transit(targetState)
+    end
+  end
+end
+
+function StateMachine:_transit(targetState)
+  self:_runExitActions(self.state)
+  self:_runEntryActions(targetState)
+  self.state = targetState
+end
+
+function StateMachine:_runExitActions(sourceState)
+  if sourceState.exit then
+    sourceState.exit()
+  end
+end
+
+function StateMachine:_runEntryActions(targetState)
+  if targetState.entry then
+    targetState.entry()
+  end
+end
+
+
 local function clone(table)
   local ret = {}
   for k, v in pairs(table) do
@@ -45,9 +90,9 @@ local function getLCA(a, b)
   return nil
 end
 
-local StateMachine = Object:extend()
+local HierarchicalStateMachine = Object:extend()
 
-function StateMachine:initialize(opts)
+function HierarchicalStateMachine:initialize(opts)
   if opts.states then
     self:setStates(opts.states)
   end
@@ -56,7 +101,7 @@ function StateMachine:initialize(opts)
   end
 end
 
-function StateMachine:setStates(states)
+function HierarchicalStateMachine:setStates(states)
   local statesMap = {}
 
   function addState(name, state, parentPath)
@@ -81,7 +126,7 @@ function StateMachine:setStates(states)
   self.statesMap = statesMap
 end
 
-function StateMachine:react(...)
+function HierarchicalStateMachine:react(...)
   local path = self.state.path
   for i = #path, 1, -1 do
     local state = path[i]
@@ -96,14 +141,14 @@ function StateMachine:react(...)
   end
 end
 
-function StateMachine:_transit(targetState)
+function HierarchicalStateMachine:_transit(targetState)
   local lca = getLCA(self.state, targetState)
   self:_runExitActions(self.state, lca)
   self:_runEntryActions(lca, targetState)
   self.state = targetState
 end
 
-function StateMachine:_runExitActions(sourceState, lca)
+function HierarchicalStateMachine:_runExitActions(sourceState, lca)
   local path = sourceState.path
   for i = #path, 1, -1 do
     local s = path[i]
@@ -116,7 +161,7 @@ function StateMachine:_runExitActions(sourceState, lca)
   end
 end
 
-function StateMachine:_runEntryActions(lca, targetState)
+function HierarchicalStateMachine:_runEntryActions(lca, targetState)
   local path = targetState.path
   local i = (indexOf(path, lca) or 0) + 1
   while i <= #path do
@@ -129,6 +174,7 @@ function StateMachine:_runEntryActions(lca, targetState)
 end
 
 hsm.StateMachine = StateMachine
+hsm.HierarchicalStateMachine = HierarchicalStateMachine
 hsm.isAncestorOf = isAncestorOf
 hsm.getLCA = getLCA
 return hsm
