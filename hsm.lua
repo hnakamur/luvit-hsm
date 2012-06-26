@@ -102,7 +102,6 @@ function HierarchicalStateMachine:initialize(opts)
 end
 
 function HierarchicalStateMachine:setStates(states)
-  self.topStates = states
   self.states = {}
 
   function addState(name, state, parentPath)
