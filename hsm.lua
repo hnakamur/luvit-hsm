@@ -69,7 +69,6 @@ local function isAncestorOf(ancestor, descendant)
   if descendant then
     local path = descendant.path
     for i = #path, 1, -1 do
-
       if path[i] == ancestor then
         return true
       end
