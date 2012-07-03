@@ -107,7 +107,7 @@ exports['substate1'] = function (test)
         end
       }
     }
-    self.state = self.states.Operand1
+    self.stateName = 'Operand1'
   end
 
   local calculator = Calculator:new()
@@ -115,10 +115,10 @@ exports['substate1'] = function (test)
   calculator:react('+')
   test.equal('Operand1:exit,OpEntered:entry',
     table.concat(calculator.log, ','))
-  test.ok(calculator.state == calculator.states.OpEntered)
+  test.ok(calculator.stateName, 'OpEntered')
   calculator.log = {}
   calculator:react('off')
-  test.ok(calculator.state == calculator.states.Final)
+  test.ok(calculator.stateName, 'Final')
   test.equal('OpEntered:exit,On:exit,Final:entry',
     table.concat(calculator.log, ','))
   test.done()

@@ -10,7 +10,7 @@ function StateMachine:initialize(opts)
     self:setStates(opts.states)
   end
   if opts.initStateName then
-    self.state = self.states[opts.initStateName]
+    self.stateName = opts.initStateName
   end
 end
 
@@ -19,29 +19,28 @@ function StateMachine:setStates(states)
 end
 
 function StateMachine:react(...)
-  local state = self.state
+  local state = self.states[self.stateName]
   local targetStateName = state.react(...)
-  if targetStateName then
-    local targetState = self.states[targetStateName]
-    if targetState ~= state then
-      self:_transit(targetState)
-    end
+  if targetStateName and targetStateName ~= self.stateName then
+    self:_transit(targetStateName)
   end
 end
 
-function StateMachine:_transit(targetState)
-  self:_runExitActions(self.state)
-  self:_runEntryActions(targetState)
-  self.state = targetState
+function StateMachine:_transit(targetStateName)
+  self:_runExitActions(self.stateName)
+  self:_runEntryActions(targetStateName)
+  self.stateName = targetStateName
 end
 
-function StateMachine:_runExitActions(sourceState)
+function StateMachine:_runExitActions(sourceStateName)
+  local sourceState = self.states[sourceStateName]
   if sourceState.exit then
     sourceState.exit()
   end
 end
 
-function StateMachine:_runEntryActions(targetState)
+function StateMachine:_runEntryActions(targetStateName)
+  local targetState = self.states[targetStateName]
   if targetState.entry then
     targetState.entry()
   end
@@ -65,30 +64,6 @@ local function indexOf(table, elem)
   return nil
 end
 
-local function isAncestorOf(ancestor, descendant)
-  if descendant then
-    local path = descendant.path
-    for i = #path, 1, -1 do
-      if path[i] == ancestor then
-        return true
-      end
-    end
-  end
-  return false
-end
-
-local function getLCA(a, b)
-  if a then
-    local path = a.path
-    for i = #path, 1, -1 do
-      if isAncestorOf(path[i], b) then
-        return path[i]
-      end
-    end
-  end
-  return nil
-end
-
 local HierarchicalStateMachine = Emitter:extend()
 
 function HierarchicalStateMachine:initialize(opts)
@@ -96,19 +71,20 @@ function HierarchicalStateMachine:initialize(opts)
     self:setStates(opts.states)
   end
   if opts.initStateName then
-    self.state = self.states[opts.initStateName]
+    self.stateName = opts.initStateName
   end
 end
 
 function HierarchicalStateMachine:setStates(states)
   self.states = {}
+  self.paths = {}
 
   function addState(name, state, parentPath)
     self.states[name] = state
 
     local path = clone(parentPath)
-    path[#path + 1] = state
-    state.path = path
+    path[#path + 1] = name
+    self.paths[name] = path
 
     if state.substates then
       for childName, child in pairs(state.substates) do
@@ -123,54 +99,76 @@ function HierarchicalStateMachine:setStates(states)
 end
 
 function HierarchicalStateMachine:react(...)
-  local path = self.state.path
+  local path = self.paths[self.stateName]
   for i = #path, 1, -1 do
-    local state = path[i]
+    local state = self.states[path[i]]
     local targetStateName = state.react(...)
     if targetStateName ~= nil then -- consumed
-      local targetState = self.states[targetStateName]
-      if targetState ~= state then
-        self:_transit(targetState)
+      if targetStateName ~= self.stateName then
+        self:_transit(targetStateName)
       end
       break
     end
   end
 end
 
-function HierarchicalStateMachine:_transit(targetState)
-  local lca = getLCA(self.state, targetState)
-  self:_runExitActions(self.state, lca)
-  self:_runEntryActions(lca, targetState)
-  self.state = targetState
+function HierarchicalStateMachine:_transit(targetStateName)
+  local lca = self:_getLCA(self.stateName, targetStateName)
+  self:_runExitActions(self.stateName, lca)
+  self:_runEntryActions(lca, targetStateName)
+  self.stateName = targetStateName
 end
 
-function HierarchicalStateMachine:_runExitActions(sourceState, lca)
-  local path = sourceState.path
+function HierarchicalStateMachine:_runExitActions(sourceStateName, lca)
+  local path = self.paths[sourceStateName]
   for i = #path, 1, -1 do
-    local s = path[i]
-    if s == lca then
+    local stateName = path[i]
+    if stateName == lca then
       break
     end
-    if s.exit then
-      s.exit()
+    local state = self.states[stateName]
+    if state.exit then
+      state.exit()
     end
   end
 end
 
-function HierarchicalStateMachine:_runEntryActions(lca, targetState)
-  local path = targetState.path
+function HierarchicalStateMachine:_runEntryActions(lca, targetStateName)
+  local path = self.paths[targetStateName]
   local i = (indexOf(path, lca) or 0) + 1
   while i <= #path do
-    local s = path[i]
-    if s.entry then
-      s.entry()
+    local state = self.states[path[i]]
+    if state.entry then
+      state.entry()
     end
     i = i + 1
   end
 end
 
+function HierarchicalStateMachine:_isAncestorOf(ancestor, descendant)
+  if descendant then
+    local path = self.paths[descendant]
+    for i = #path, 1, -1 do
+      if path[i] == ancestor then
+        return true
+      end
+    end
+  end
+  return false
+end
+
+function HierarchicalStateMachine:_getLCA(a, b)
+  if a then
+    local path = self.paths[a]
+    for i = #path, 1, -1 do
+      if self:_isAncestorOf(path[i], b) then
+        return path[i]
+      end
+    end
+  end
+  return nil
+end
+
 hsm.StateMachine = StateMachine
 hsm.HierarchicalStateMachine = HierarchicalStateMachine
-hsm.isAncestorOf = isAncestorOf
-hsm.getLCA = getLCA
 return hsm

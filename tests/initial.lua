@@ -52,7 +52,7 @@ exports['initial'] = function (test)
         end
       }
     }
-    self.state = self.states['initial']
+    self.stateName = 'initial'
   end
 
   function Door:addLog(log)

@@ -32,7 +32,7 @@ exports['extended_state1'] = function (test)
       Final = {
       }
     }
-    self.state = self.states.Default
+    self.stateName = 'Default'
     self.keyCount = 5
   end
 
@@ -59,7 +59,7 @@ exports['extended_state1'] = function (test)
   keyboard:react('CAPS_LOCK')
   keyboard:react('e')
   test.equal(keyboard.output, 'e')
-  test.ok(keyboard.state == keyboard.states.Final)
+  test.ok(keyboard.stateName, 'Final')
   test.done()
 end
 
