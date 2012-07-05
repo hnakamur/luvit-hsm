@@ -5,15 +5,6 @@ local hsm = {}
 
 local StateMachine = Emitter:extend()
 
-function StateMachine:initialize(opts)
-  if opts.states then
-    self:setStates(opts.states)
-  end
-  if opts.initStateName then
-    self.stateName = opts.initStateName
-  end
-end
-
 function StateMachine:setStates(states)
   self.states = states
 end
@@ -65,15 +56,6 @@ local function indexOf(table, elem)
 end
 
 local HierarchicalStateMachine = Emitter:extend()
-
-function HierarchicalStateMachine:initialize(opts)
-  if opts.states then
-    self:setStates(opts.states)
-  end
-  if opts.initStateName then
-    self.stateName = opts.initStateName
-  end
-end
 
 function HierarchicalStateMachine:setStates(states)
   self.states = {}

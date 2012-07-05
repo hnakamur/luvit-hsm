@@ -4,11 +4,11 @@ local table = require('table')
 local hsm = require('../hsm.lua')
 local HierarchicalStateMachine = hsm.HierarchicalStateMachine
 
-exports['local_transition'] = function (test)
-  local machine
-  machine = HierarchicalStateMachine:new{
-    initStateName = 's1',
-    states = {
+exports['localTransition'] = function (test)
+  local TestMachine = HierarchicalStateMachine:extend()
+  
+  function TestMachine:initialize()
+    self:setStates{
       s1 = {
         entry = function()
           machine:addLog('s1_entry')
@@ -36,7 +36,8 @@ exports['local_transition'] = function (test)
         }
       }
     }
-  }
+    self:stateName = 's1'
+  end
 
   function machine:addLog(log)
     table.insert(self.log, log)
