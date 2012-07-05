@@ -8,20 +8,12 @@ exports['isAncestorOf'] = function (test)
   local TestMachine = HierarchicalStateMachine:extend()
   
   function TestMachine:initialize()
-    self:setStates{
-      a = {
-        substates = {
-          b = {
-            substates = {
-              c = {
-              },
-              d = {
-                substates = {
-                  e = {
-                  }
-                }
-              }
-            }
+    self:defineStates{
+      A = {
+        B = {
+          C = {},
+          D = {
+            E = {}
           }
         }
       }
@@ -29,9 +21,9 @@ exports['isAncestorOf'] = function (test)
   end
 
   local machine = TestMachine:new()
-  local a = machine.states.a
-  local d = machine.states.d
-  local e = machine.states.e
+  local a = machine.states.A
+  local d = machine.states.D
+  local e = machine.states.E
   test.equal(machine:_isAncestorOf(e, nil), false)
   test.equal(machine:_isAncestorOf(e, e), true)
   test.equal(machine:_isAncestorOf(d, e), true)
@@ -44,20 +36,12 @@ exports['getLCA'] = function (test)
   local TestMachine = HierarchicalStateMachine:extend()
   
   function TestMachine:initialize()
-    self:setStates{
-      a = {
-        substates = {
-          b = {
-            substates = {
-              c = {
-              },
-              d = {
-                substates = {
-                  e = {
-                  }
-                }
-              }
-            }
+    self:defineStates{
+      A = {
+        B = {
+          C = {},
+          D = {
+            E = {}
           }
         }
       }
@@ -65,10 +49,10 @@ exports['getLCA'] = function (test)
   end
 
   local machine = TestMachine:new()
-  local b = machine.states.b
-  local c = machine.states.c
-  local d = machine.states.d
-  local e = machine.states.e
+  local b = machine.states.B
+  local c = machine.states.C
+  local d = machine.states.D
+  local e = machine.states.E
   test.equal(machine:_getLCA(e, nil), nil)
   test.equal(machine:_getLCA(e, d), d)
   test.equal(machine:_getLCA(d, e), d)

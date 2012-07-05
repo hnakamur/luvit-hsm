@@ -8,15 +8,9 @@ exports['entry_action1'] = function (test)
   local Keyboard = StateMachine:extend()
 
   function Keyboard:initialize()
-    self:setStates{
-      Default = {
-        react = Keyboard._reactDefault,
-        entry = Keyboard._entryDefault,
-        exit = Keyboard._exitDefault
-      },
-      CapsLocked = {
-        react = Keyboard._reactCapsLocked
-      }
+    self:defineStates{
+      Default = {},
+      CapsLocked = {}
     }
     self.state = self.states.Default
   end

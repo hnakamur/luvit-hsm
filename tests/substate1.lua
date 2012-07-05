@@ -9,31 +9,14 @@ exports['substate1'] = function (test)
   local Calculator = HierarchicalStateMachine:extend()
 
   function Calculator:initialize()
-    self:setStates{
+    self:defineStates{
       On = {
-        react = Calculator._reactOn,
-        exit = Calculator._exitOn,
-        substates = {
-          Operand1 = {
-            react = Calculator._reactOperand1,
-            exit = Calculator._exitOperand1
-          },
-          OpEntered = {
-            react = Calculator._reactOpEntered,
-            entry = Calculator._entryOpEntered,
-            exit = Calculator._exitOpEntered
-          },
-          Operand2 = {
-            react = Calculator._reactOperand2
-          },
-          Result = {
-            react = Calculator._reactResult
-          }
-        }
+        Operand1 = {},
+        OpEntered = {},
+        Operand2 = {},
+        Result = {}
       },
-      Final = {
-        entry = Calculator._entryFinal
-      }
+      Final = {}
     }
     self.state = self.states.Operand1
   end

@@ -8,18 +8,9 @@ exports['localTransition'] = function (test)
   local TestMachine = HierarchicalStateMachine:extend()
   
   function TestMachine:initialize()
-    self:setStates{
+    self:defineStates{
       S1 = {
-        entry = TestMachine._entryS1,
-        react = TestMachine._reactS1,
-        exit = TestMachine._exitS1,
-        substates = {
-          S2 = {
-            entry = TestMachine._entryS2,
-            react = TestMachine._reactS2,
-            exit = TestMachine._exitS2
-          }
-        }
+        S2 = {}
       }
     }
     self.state = self.states.S1

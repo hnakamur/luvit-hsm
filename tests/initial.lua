@@ -8,20 +8,10 @@ exports['initial'] = function (test)
   local Door = StateMachine:extend()
 
   function Door:initialize()
-    self:setStates{
-      Initial = {
-        react = Door._reactInitial
-      },
-      Open = {
-        entry = Door._entryOpen,
-        react = Door._reactOpen,
-        exit = Door._exitOpen
-      },
-      Closed = {
-        entry = Door._entryClosed,
-        react = Door._reactClosed,
-        exit = Door._exitClosed
-      }
+    self:defineStates{
+      Initial = {},
+      Open = {},
+      Closed = {}
     }
     self.state = self.states.Initial
   end

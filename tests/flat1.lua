@@ -8,13 +8,9 @@ exports['flat1'] = function (test)
   local Keyboard = StateMachine:extend()
 
   function Keyboard:initialize()
-    self:setStates{
-      Default = {
-        react = Keyboard._reactDefault
-      },
-      CapsLocked = {
-        react = Keyboard._reactCapsLocked
-      }
+    self:defineStates{
+      Default = {},
+      CapsLocked = {}
     }
     self.state = self.states.Default
   end

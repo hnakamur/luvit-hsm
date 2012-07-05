@@ -8,15 +8,10 @@ exports['extended_state1'] = function (test)
   local FragileKeyboard = StateMachine:extend()
 
   function FragileKeyboard:initialize()
-    self:setStates{
-      Default = {
-        react = FragileKeyboard._reactDefault
-      },
-      CapsLocked = {
-        react = FragileKeyboard._reactCapsLocked
-      },
-      Final = {
-      }
+    self:defineStates{
+      Default = {},
+      CapsLocked = {},
+      Final = {}
     }
     self.state = self.states.Default
     self.keyCount = 5

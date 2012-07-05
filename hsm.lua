@@ -5,8 +5,25 @@ local hsm = {}
 
 local StateMachine = Emitter:extend()
 
-function StateMachine:setStates(states)
-  self.states = states
+function StateMachine:defineStates(states)
+  local index = getmetatable(self).__index
+  local types = {'react', 'entry', 'exit'}
+
+  function createState(stateName)
+    local state = {}
+    for _, actionType in ipairs(types) do
+      local methodName = '_' .. actionType .. stateName
+      if index[methodName] then
+        state[actionType] = index[methodName]
+      end
+    end
+    return state
+  end
+
+  self.states = {}
+  for name, _ in pairs(states) do
+    self.states[name] = createState(name)
+  end
 end
 
 function StateMachine:react(...)
@@ -54,26 +71,39 @@ end
 
 local HierarchicalStateMachine = Emitter:extend()
 
-function HierarchicalStateMachine:setStates(states)
+function HierarchicalStateMachine:defineStates(states)
+  local index = getmetatable(self).__index
+  local types = {'react', 'entry', 'exit'}
+
+  function createState(stateName)
+    local state = {}
+    for _, actionType in ipairs(types) do
+      local methodName = '_' .. actionType .. stateName
+      if index[methodName] then
+        state[actionType] = index[methodName]
+      end
+    end
+    return state
+  end
+
   self.states = {}
   self.paths = {}
 
-  function addState(name, state, parentPath)
+  function addState(name, children, parentPath)
+    local state = createState(name)
     self.states[name] = state
 
     local path = clone(parentPath)
     path[#path + 1] = state
     self.paths[state] = path
 
-    if state.substates then
-      for childName, child in pairs(state.substates) do
-        addState(childName, child, path)
-      end
+    for n, c in pairs(children) do
+      addState(n, c, path)
     end
   end
 
-  for name, state in pairs(states) do
-    addState(name, state, {})
+  for name, children in pairs(states) do
+    addState(name, children, {})
   end
 end
 
