@@ -9,40 +9,49 @@ exports['localTransition'] = function (test)
   
   function TestMachine:initialize()
     self:setStates{
-      s1 = {
-        entry = function()
-          machine:addLog('s1_entry')
-        end,
-        react = function(event)
-          machine:addLog('s1_react')
-          return 's2'
-        end,
-        exit = function()
-          machine:addLog('s1_exit')
-        end,
+      S1 = {
+        entry = TestMachine._entryS1,
+        react = TestMachine._reactS1,
+        exit = TestMachine._exitS1,
         substates = {
-          s2 = {
-            entry = function()
-              machine:addLog('s2_entry')
-            end,
-            react = function(event)
-              machine:addLog('s2_react')
-              return 's1'
-            end,
-            exit = function()
-              machine:addLog('s2_exit')
-            end
+          S2 = {
+            entry = TestMachine._entryS2,
+            react = TestMachine._reactS2,
+            exit = TestMachine._exitS2
           }
         }
       }
     }
-    self:stateName = 's1'
+    self.state = self.states.S1
   end
 
-  function machine:addLog(log)
+  function TestMachine:_entryS1()
+    self:addLog('s1_entry')
+  end
+  function TestMachine:_reactS1(event)
+    self:addLog('s1_react')
+    return 'S2'
+  end
+  function TestMachine:_exitS1()
+    self:addLog('s1_exit')
+  end
+
+  function TestMachine:_entryS2()
+    self:addLog('s2_entry')
+  end
+  function TestMachine:_reactS2(event)
+    self:addLog('s2_react')
+    return 'S1'
+  end
+  function TestMachine:_exitS2()
+    self:addLog('s2_exit')
+  end
+
+  function TestMachine:addLog(log)
     table.insert(self.log, log)
   end
 
+  local machine = TestMachine:new()
   machine.log = {}
   machine:react()
   test.equal('s1_react,s2_entry', table.concat(machine.log, ','))

@@ -10,24 +10,10 @@ exports['extended_state1'] = function (test)
   function FragileKeyboard:initialize()
     self:setStates{
       Default = {
-        react = function(keyName)
-          if keyName == 'CAPS_LOCK' then
-            return 'CapsLocked'
-          else
-            self:handleLowerCaseScanCode(keyName)
-            return self.keyCount > 0 and 'Default' or 'Final'
-          end
-        end
+        react = FragileKeyboard._reactDefault
       },
       CapsLocked = {
-        react = function(keyName)
-          if keyName == 'CAPS_LOCK' then
-            return 'Default'
-          else
-            self:handleUpperCaseScanCode(keyName)
-            return self.keyCount > 0 and 'CapsLocked' or 'Final'
-          end
-        end
+        react = FragileKeyboard._reactCapsLocked
       },
       Final = {
       }
@@ -36,12 +22,30 @@ exports['extended_state1'] = function (test)
     self.keyCount = 5
   end
 
-  function FragileKeyboard:handleLowerCaseScanCode(keyName)
+  function FragileKeyboard:_reactDefault(keyName)
+    if keyName == 'CAPS_LOCK' then
+      return 'CapsLocked'
+    else
+      self:_handleLowerCaseScanCode(keyName)
+      return self.keyCount > 0 and 'Default' or 'Final'
+    end
+  end
+
+  function FragileKeyboard:_reactCapsLocked(keyName)
+    if keyName == 'CAPS_LOCK' then
+      return 'Default'
+    else
+      self:_handleUpperCaseScanCode(keyName)
+      return self.keyCount > 0 and 'CapsLocked' or 'Final'
+    end
+  end
+
+  function FragileKeyboard:_handleLowerCaseScanCode(keyName)
     self.output = string.lower(keyName)
     self.keyCount = self.keyCount - 1
   end
 
-  function FragileKeyboard:handleUpperCaseScanCode(keyName)
+  function FragileKeyboard:_handleUpperCaseScanCode(keyName)
     self.output = string.upper(keyName)
     self.keyCount = self.keyCount - 1
   end

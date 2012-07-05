@@ -10,7 +10,7 @@ function StateMachine:setStates(states)
 end
 
 function StateMachine:react(...)
-  local targetStateName = self.state.react(...)
+  local targetStateName = self.state.react(self, ...)
   if targetStateName then
     local targetState = self.states[targetStateName]
     if targetState ~= self.state then
@@ -27,13 +27,13 @@ end
 
 function StateMachine:_runExitActions(sourceState)
   if sourceState.exit then
-    sourceState.exit()
+    sourceState.exit(self)
   end
 end
 
 function StateMachine:_runEntryActions(targetState)
   if targetState.entry then
-    targetState.entry()
+    targetState.entry(self)
   end
 end
 
@@ -84,7 +84,7 @@ function HierarchicalStateMachine:react(...)
   local path = self.paths[self.state]
   for i = #path, 1, -1 do
     local state = path[i]
-    local targetStateName = state.react(...)
+    local targetStateName = state.react(self, ...)
     if targetStateName ~= nil then -- consumed
       local targetState = self.states[targetStateName]
       if targetState ~= self.state then
@@ -110,7 +110,7 @@ function HierarchicalStateMachine:_runExitActions(sourceState, lca)
       break
     end
     if state.exit then
-      state.exit()
+      state.exit(self)
     end
   end
 end
@@ -121,7 +121,7 @@ function HierarchicalStateMachine:_runEntryActions(lca, targetState)
   while i <= #path do
     local state = path[i]
     if state.entry then
-      state.entry()
+      state.entry(self)
     end
     i = i + 1
   end

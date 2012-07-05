@@ -10,34 +10,38 @@ exports['flat1'] = function (test)
   function Keyboard:initialize()
     self:setStates{
       Default = {
-        react = function(keyName)
-          if keyName == 'CAPS_LOCK' then
-            return 'CapsLocked'
-          else
-            self:handleLowerCaseScanCode(keyName)
-            return 'Default'
-          end
-        end
+        react = Keyboard._reactDefault
       },
       CapsLocked = {
-        react = function(keyName)
-          if keyName == 'CAPS_LOCK' then
-            return 'Default'
-          else
-            self:handleUpperCaseScanCode(keyName)
-            return 'CapsLocked'
-          end
-        end
+        react = Keyboard._reactCapsLocked
       }
     }
     self.state = self.states.Default
   end
 
-  function Keyboard:handleLowerCaseScanCode(keyName)
+  function Keyboard:_reactDefault(keyName)
+    if keyName == 'CAPS_LOCK' then
+      return 'CapsLocked'
+    else
+      self:_handleLowerCaseScanCode(keyName)
+      return 'Default'
+    end
+  end
+
+  function Keyboard:_reactCapsLocked(keyName)
+    if keyName == 'CAPS_LOCK' then
+      return 'Default'
+    else
+      self:_handleUpperCaseScanCode(keyName)
+      return 'CapsLocked'
+    end
+  end
+
+  function Keyboard:_handleLowerCaseScanCode(keyName)
     self.output = string.lower(keyName)
   end
 
-  function Keyboard:handleUpperCaseScanCode(keyName)
+  function Keyboard:_handleUpperCaseScanCode(keyName)
     self.output = string.upper(keyName)
   end
 

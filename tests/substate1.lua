@@ -11,103 +11,123 @@ exports['substate1'] = function (test)
   function Calculator:initialize()
     self:setStates{
       On = {
-        react = (function()
-          local keyMap = {
-            off = 'Final'
-          }
-          return function(keyName)
-            return keyMap[keyName]
-          end
-        end)(),
-        exit = function()
-          table.insert(self.log, 'On:exit')
-        end,
+        react = Calculator._reactOn,
+        exit = Calculator._exitOn,
         substates = {
           Operand1 = {
-            react = (function()
-              local keyMap = {
-                ['+'] = 'OpEntered',
-                ['-'] = 'OpEntered',
-                ['*'] = 'OpEntered',
-                ['/'] = 'OpEntered'
-              }
-              return function(keyName)
-                return keyMap[keyName]
-              end
-            end)(),
-            exit = function()
-              table.insert(self.log, 'Operand1:exit')
-            end
+            react = Calculator._reactOperand1,
+            exit = Calculator._exitOperand1
           },
           OpEntered = {
-            react = (function()
-              local keyMap = {
-                ['0'] = 'Operand2',
-                ['1'] = 'Operand2',
-                ['2'] = 'Operand2',
-                ['3'] = 'Operand2',
-                ['4'] = 'Operand2',
-                ['5'] = 'Operand2',
-                ['6'] = 'Operand2',
-                ['7'] = 'Operand2',
-                ['8'] = 'Operand2',
-                ['9'] = 'Operand2',
-                ['.'] = 'Operand2'
-              }
-              return function(keyName)
-                return keyMap[keyName]
-              end
-            end)(),
-            entry = function()
-              table.insert(self.log, 'OpEntered:entry')
-            end,
-            exit = function()
-              table.insert(self.log, 'OpEntered:exit')
-            end
+            react = Calculator._reactOpEntered,
+            entry = Calculator._entryOpEntered,
+            exit = Calculator._exitOpEntered
           },
           Operand2 = {
-            react = (function()
-              local keyMap = {
-                ['-'] = 'Result'
-              }
-              return function(keyName)
-                return keyMap[keyName]
-              end
-            end)(),
+            react = Calculator._reactOperand2
           },
           Result = {
-            react = (function()
-              local keyMap = {
-                ['0'] = 'Operand1',
-                ['1'] = 'Operand1',
-                ['2'] = 'Operand1',
-                ['3'] = 'Operand1',
-                ['4'] = 'Operand1',
-                ['5'] = 'Operand1',
-                ['6'] = 'Operand1',
-                ['7'] = 'Operand1',
-                ['8'] = 'Operand1',
-                ['9'] = 'Operand1',
-                ['.'] = 'Operand1',
-                ['+'] = 'OpEntered',
-                ['-'] = 'OpEntered',
-                ['*'] = 'OpEntered',
-                ['/'] = 'OpEntered'
-              }
-              return function(keyName)
-                return keyMap[keyName]
-              end
-            end)(),
+            react = Calculator._reactResult
           }
         }
       },
       Final = {
-        entry = function()
-          table.insert(self.log, 'Final:entry')
-        end
+        entry = Calculator._entryFinal
       }
     }
     self.state = self.states.Operand1
+  end
+
+  (function()
+    local keyMap = {
+      off = 'Final'
+    }
+    Calculator._reactOn = function(self, keyName)
+      return keyMap[keyName]
+    end
+  end)();
+
+  (function()
+    local keyMap = {
+      ['+'] = 'OpEntered',
+      ['-'] = 'OpEntered',
+      ['*'] = 'OpEntered',
+      ['/'] = 'OpEntered'
+    }
+    Calculator._reactOperand1 = function(self, keyName)
+      return keyMap[keyName]
+    end
+  end)();
+
+  (function()
+    local keyMap = {
+      ['0'] = 'Operand2',
+      ['1'] = 'Operand2',
+      ['2'] = 'Operand2',
+      ['3'] = 'Operand2',
+      ['4'] = 'Operand2',
+      ['5'] = 'Operand2',
+      ['6'] = 'Operand2',
+      ['7'] = 'Operand2',
+      ['8'] = 'Operand2',
+      ['9'] = 'Operand2',
+      ['.'] = 'Operand2'
+    }
+    Calculator._reactOpEntered = function(self, keyName)
+      return keyMap[keyName]
+    end
+  end)();
+
+  (function()
+    local keyMap = {
+      ['-'] = 'Result'
+    }
+    Calculator._reactOperand2 = function(self, keyName)
+      return keyMap[keyName]
+    end
+  end)();
+
+  (function()
+    local keyMap = {
+      ['0'] = 'Operand1',
+      ['1'] = 'Operand1',
+      ['2'] = 'Operand1',
+      ['3'] = 'Operand1',
+      ['4'] = 'Operand1',
+      ['5'] = 'Operand1',
+      ['6'] = 'Operand1',
+      ['7'] = 'Operand1',
+      ['8'] = 'Operand1',
+      ['9'] = 'Operand1',
+      ['.'] = 'Operand1',
+      ['+'] = 'OpEntered',
+      ['-'] = 'OpEntered',
+      ['*'] = 'OpEntered',
+      ['/'] = 'OpEntered'
+    }
+    Calculator._reactResult = function(self, keyName)
+      return keyMap[keyName]
+    end
+  end)();
+
+  function Calculator:_exitOn()
+    table.insert(self.log, 'On:exit')
+  end
+
+  function Calculator:_exitOperand1()
+    table.insert(self.log, 'Operand1:exit')
+  end
+
+  function Calculator:_entryOpEntered()
+    table.insert(self.log, 'OpEntered:entry')
+  end
+
+  function Calculator:_exitOpEntered()
+    table.insert(self.log, 'OpEntered:exit')
+  end
+
+  function Calculator:_entryFinal()
+    table.insert(self.log, 'Final:entry')
   end
 
   local calculator = Calculator:new()

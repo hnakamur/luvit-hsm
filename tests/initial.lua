@@ -10,49 +10,63 @@ exports['initial'] = function (test)
   function Door:initialize()
     self:setStates{
       Initial = {
-        react = function(event)
-          if event == 'create' then
-            self:addLog('initial')
-            return 'Open'
-          else
-            return nil
-          end
-        end
+        react = Door._reactInitial
       },
       Open = {
-        entry = function()
-          self:addLog('open_entry')
-        end,
-        react = function(event)
-          if event == 'close' then
-            self:addLog('open_react')
-            return 'Closed'
-          else
-            return nil
-          end
-        end,
-        exit = function()
-          self:addLog('open_exit')
-        end
+        entry = Door._entryOpen,
+        react = Door._reactOpen,
+        exit = Door._exitOpen
       },
       Closed = {
-        entry = function()
-          self:addLog('closed_entry')
-        end,
-        react = function(event)
-          if event == 'open' then
-            self:addLog('closed_react')
-            return 'Open'
-          else
-            return nil
-          end
-        end,
-        exit = function()
-          self:addLog('closed_exit')
-        end
+        entry = Door._entryClosed,
+        react = Door._reactClosed,
+        exit = Door._exitClosed
       }
     }
     self.state = self.states.Initial
+  end
+
+  function Door:_reactInitial(event)
+    if event == 'create' then
+      self:addLog('initial')
+      return 'Open'
+    else
+      return nil
+    end
+  end
+
+  function Door:_reactOpen(event)
+    if event == 'close' then
+      self:addLog('open_react')
+      return 'Closed'
+    else
+      return nil
+    end
+  end
+
+  function Door:_reactClosed(event)
+    if event == 'open' then
+      self:addLog('closed_react')
+      return 'Open'
+    else
+      return nil
+    end
+  end
+
+  function Door:_entryOpen()
+    self:addLog('open_entry')
+  end
+
+  function Door:_exitOpen()
+    self:addLog('open_exit')
+  end
+
+  function Door:_entryClosed()
+    self:addLog('closed_entry')
+  end
+
+  function Door:_exitClosed()
+    self:addLog('closed_exit')
   end
 
   function Door:addLog(log)
