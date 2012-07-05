@@ -42,7 +42,7 @@ exports['substate1'] = function (test)
     local keyMap = {
       off = 'Final'
     }
-    Calculator._reactOn = function(self, keyName)
+    function Calculator:_reactOn(keyName)
       return keyMap[keyName]
     end
   end)();
@@ -54,7 +54,7 @@ exports['substate1'] = function (test)
       ['*'] = 'OpEntered',
       ['/'] = 'OpEntered'
     }
-    Calculator._reactOperand1 = function(self, keyName)
+    function Calculator:_reactOperand1(keyName)
       return keyMap[keyName]
     end
   end)();
@@ -73,7 +73,7 @@ exports['substate1'] = function (test)
       ['9'] = 'Operand2',
       ['.'] = 'Operand2'
     }
-    Calculator._reactOpEntered = function(self, keyName)
+    function Calculator:_reactOpEntered(keyName)
       return keyMap[keyName]
     end
   end)();
@@ -82,7 +82,7 @@ exports['substate1'] = function (test)
     local keyMap = {
       ['-'] = 'Result'
     }
-    Calculator._reactOperand2 = function(self, keyName)
+    function Calculator:_reactOperand2(keyName)
       return keyMap[keyName]
     end
   end)();
@@ -105,7 +105,7 @@ exports['substate1'] = function (test)
       ['*'] = 'OpEntered',
       ['/'] = 'OpEntered'
     }
-    Calculator._reactResult = function(self, keyName)
+    function Calculator:_reactResult(keyName)
       return keyMap[keyName]
     end
   end)();
