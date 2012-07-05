@@ -78,9 +78,9 @@ function HierarchicalStateMachine:setStates(states)
 end
 
 function HierarchicalStateMachine:react(...)
-  local path = self.paths[self.state]
-  for i = #path, 1, -1 do
-    local state = path[i]
+  local path, i
+  local state = self.state
+  repeat
     local targetState = state.react(self, ...)
     if targetState then -- consumed
       if targetState ~= self.state then
@@ -88,7 +88,15 @@ function HierarchicalStateMachine:react(...)
       end
       break
     end
-  end
+
+    if i then
+      i = i - 1
+    else
+      path = self.paths[state]
+      i = #path - 1
+    end
+    state = path[i]
+  until i < 1
 end
 
 function HierarchicalStateMachine:_transit(targetState)
