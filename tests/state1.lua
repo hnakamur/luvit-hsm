@@ -1,7 +1,7 @@
 local exports = {}
 
 local string = require('string')
-local hsm = require('../hsm.lua')
+local hsm = require('../hsm')
 local HierarchicalStateMachine = hsm.HierarchicalStateMachine
 
 exports['isAncestorOf'] = function (test)

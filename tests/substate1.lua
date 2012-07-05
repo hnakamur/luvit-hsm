@@ -2,7 +2,7 @@ local exports = {}
 
 local string = require('string')
 local table = require('table')
-local hsm = require('../hsm.lua')
+local hsm = require('../hsm')
 local HierarchicalStateMachine = hsm.HierarchicalStateMachine
 
 exports['substate1'] = function (test)

@@ -1,7 +1,7 @@
 local exports = {}
 
 local string = require('string')
-local hsm = require('../hsm.lua')
+local hsm = require('../hsm')
 local StateMachine = hsm.StateMachine
 
 exports['extended_state1'] = function (test)
