@@ -21,19 +21,19 @@ exports['flat1'] = function (test)
 
   function Keyboard:_reactDefault(keyName)
     if keyName == 'CAPS_LOCK' then
-      return 'CapsLocked'
+      return self.states.CapsLocked
     else
       self:_handleLowerCaseScanCode(keyName)
-      return 'Default'
+      return self.states.Default
     end
   end
 
   function Keyboard:_reactCapsLocked(keyName)
     if keyName == 'CAPS_LOCK' then
-      return 'Default'
+      return self.states.Default
     else
       self:_handleUpperCaseScanCode(keyName)
-      return 'CapsLocked'
+      return self.states.CapsLocked
     end
   end
 

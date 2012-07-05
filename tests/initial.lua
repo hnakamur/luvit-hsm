@@ -29,7 +29,7 @@ exports['initial'] = function (test)
   function Door:_reactInitial(event)
     if event == 'create' then
       self:addLog('initial')
-      return 'Open'
+      return self.states.Open
     else
       return nil
     end
@@ -38,7 +38,7 @@ exports['initial'] = function (test)
   function Door:_reactOpen(event)
     if event == 'close' then
       self:addLog('open_react')
-      return 'Closed'
+      return self.states.Closed
     else
       return nil
     end
@@ -47,7 +47,7 @@ exports['initial'] = function (test)
   function Door:_reactClosed(event)
     if event == 'open' then
       self:addLog('closed_react')
-      return 'Open'
+      return self.states.Open
     else
       return nil
     end

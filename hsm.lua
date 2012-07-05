@@ -10,12 +10,9 @@ function StateMachine:setStates(states)
 end
 
 function StateMachine:react(...)
-  local targetStateName = self.state.react(self, ...)
-  if targetStateName then
-    local targetState = self.states[targetStateName]
-    if targetState ~= self.state then
-      self:_transit(targetState)
-    end
+  local targetState = self.state.react(self, ...)
+  if targetState and targetState ~= self.state then
+    self:_transit(targetState)
   end
 end
 
@@ -84,9 +81,8 @@ function HierarchicalStateMachine:react(...)
   local path = self.paths[self.state]
   for i = #path, 1, -1 do
     local state = path[i]
-    local targetStateName = state.react(self, ...)
-    if targetStateName ~= nil then -- consumed
-      local targetState = self.states[targetStateName]
+    local targetState = state.react(self, ...)
+    if targetState then -- consumed
       if targetState ~= self.state then
         self:_transit(targetState)
       end

@@ -30,7 +30,7 @@ exports['localTransition'] = function (test)
   end
   function TestMachine:_reactS1(event)
     self:addLog('s1_react')
-    return 'S2'
+    return self.states.S2
   end
   function TestMachine:_exitS1()
     self:addLog('s1_exit')
@@ -41,7 +41,7 @@ exports['localTransition'] = function (test)
   end
   function TestMachine:_reactS2(event)
     self:addLog('s2_react')
-    return 'S1'
+    return self.states.S1
   end
   function TestMachine:_exitS2()
     self:addLog('s2_exit')

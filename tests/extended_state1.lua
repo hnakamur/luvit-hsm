@@ -24,19 +24,19 @@ exports['extended_state1'] = function (test)
 
   function FragileKeyboard:_reactDefault(keyName)
     if keyName == 'CAPS_LOCK' then
-      return 'CapsLocked'
+      return self.states.CapsLocked
     else
       self:_handleLowerCaseScanCode(keyName)
-      return self.keyCount > 0 and 'Default' or 'Final'
+      return self.keyCount > 0 and self.states.Default or self.states.Final
     end
   end
 
   function FragileKeyboard:_reactCapsLocked(keyName)
     if keyName == 'CAPS_LOCK' then
-      return 'Default'
+      return self.states.Default
     else
       self:_handleUpperCaseScanCode(keyName)
-      return self.keyCount > 0 and 'CapsLocked' or 'Final'
+      return self.keyCount > 0 and self.states.CapsLocked or self.states.Final
     end
   end
 
