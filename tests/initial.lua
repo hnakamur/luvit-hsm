@@ -9,24 +9,24 @@ exports['initial'] = function (test)
 
   function Door:initialize()
     self:setStates{
-      initial = {
+      Initial = {
         react = function(event)
           if event == 'create' then
             self:addLog('initial')
-            return 'open'
+            return 'Open'
           else
             return nil
           end
         end
       },
-      open = {
+      Open = {
         entry = function()
           self:addLog('open_entry')
         end,
         react = function(event)
           if event == 'close' then
             self:addLog('open_react')
-            return 'closed'
+            return 'Closed'
           else
             return nil
           end
@@ -35,14 +35,14 @@ exports['initial'] = function (test)
           self:addLog('open_exit')
         end
       },
-      closed = {
+      Closed = {
         entry = function()
           self:addLog('closed_entry')
         end,
         react = function(event)
           if event == 'open' then
             self:addLog('closed_react')
-            return 'open'
+            return 'Open'
           else
             return nil
           end
@@ -52,7 +52,7 @@ exports['initial'] = function (test)
         end
       }
     }
-    self.stateName = 'initial'
+    self.state = self.states.Initial
   end
 
   function Door:addLog(log)

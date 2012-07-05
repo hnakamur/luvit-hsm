@@ -30,7 +30,7 @@ exports['flat1'] = function (test)
         end
       }
     }
-    self.stateName = 'Default'
+    self.state = self.states.Default
   end
 
   function Keyboard:handleLowerCaseScanCode(keyName)

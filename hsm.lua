@@ -10,28 +10,28 @@ function StateMachine:setStates(states)
 end
 
 function StateMachine:react(...)
-  local state = self.states[self.stateName]
-  local targetStateName = state.react(...)
-  if targetStateName and targetStateName ~= self.stateName then
-    self:_transit(targetStateName)
+  local targetStateName = self.state.react(...)
+  if targetStateName then
+    local targetState = self.states[targetStateName]
+    if targetState ~= self.state then
+      self:_transit(targetState)
+    end
   end
 end
 
-function StateMachine:_transit(targetStateName)
-  self:_runExitActions(self.stateName)
-  self:_runEntryActions(targetStateName)
-  self.stateName = targetStateName
+function StateMachine:_transit(targetState)
+  self:_runExitActions(self.state)
+  self:_runEntryActions(targetState)
+  self.state = targetState
 end
 
-function StateMachine:_runExitActions(sourceStateName)
-  local sourceState = self.states[sourceStateName]
+function StateMachine:_runExitActions(sourceState)
   if sourceState.exit then
     sourceState.exit()
   end
 end
 
-function StateMachine:_runEntryActions(targetStateName)
-  local targetState = self.states[targetStateName]
+function StateMachine:_runEntryActions(targetState)
   if targetState.entry then
     targetState.entry()
   end
@@ -65,8 +65,8 @@ function HierarchicalStateMachine:setStates(states)
     self.states[name] = state
 
     local path = clone(parentPath)
-    path[#path + 1] = name
-    self.paths[name] = path
+    path[#path + 1] = state
+    self.paths[state] = path
 
     if state.substates then
       for childName, child in pairs(state.substates) do
@@ -81,45 +81,45 @@ function HierarchicalStateMachine:setStates(states)
 end
 
 function HierarchicalStateMachine:react(...)
-  local path = self.paths[self.stateName]
+  local path = self.paths[self.state]
   for i = #path, 1, -1 do
-    local state = self.states[path[i]]
+    local state = path[i]
     local targetStateName = state.react(...)
     if targetStateName ~= nil then -- consumed
-      if targetStateName ~= self.stateName then
-        self:_transit(targetStateName)
+      local targetState = self.states[targetStateName]
+      if targetState ~= self.state then
+        self:_transit(targetState)
       end
       break
     end
   end
 end
 
-function HierarchicalStateMachine:_transit(targetStateName)
-  local lca = self:_getLCA(self.stateName, targetStateName)
-  self:_runExitActions(self.stateName, lca)
-  self:_runEntryActions(lca, targetStateName)
-  self.stateName = targetStateName
+function HierarchicalStateMachine:_transit(targetState)
+  local lca = self:_getLCA(self.state, targetState)
+  self:_runExitActions(self.state, lca)
+  self:_runEntryActions(lca, targetState)
+  self.state = targetState
 end
 
-function HierarchicalStateMachine:_runExitActions(sourceStateName, lca)
-  local path = self.paths[sourceStateName]
+function HierarchicalStateMachine:_runExitActions(sourceState, lca)
+  local path = self.paths[sourceState]
   for i = #path, 1, -1 do
-    local stateName = path[i]
-    if stateName == lca then
+    local state = path[i]
+    if state == lca then
       break
     end
-    local state = self.states[stateName]
     if state.exit then
       state.exit()
     end
   end
 end
 
-function HierarchicalStateMachine:_runEntryActions(lca, targetStateName)
-  local path = self.paths[targetStateName]
+function HierarchicalStateMachine:_runEntryActions(lca, targetState)
+  local path = self.paths[targetState]
   local i = (indexOf(path, lca) or 0) + 1
   while i <= #path do
-    local state = self.states[path[i]]
+    local state = path[i]
     if state.entry then
       state.entry()
     end
