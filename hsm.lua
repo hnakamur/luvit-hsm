@@ -31,6 +31,7 @@ function StateMachine:react(...)
   if targetState and targetState ~= self.state then
     self:_transit(targetState)
   end
+  return targetState
 end
 
 function StateMachine:_transit(targetState)
@@ -110,8 +111,9 @@ end
 function HierarchicalStateMachine:react(...)
   local path, i
   local state = self.state
+  local targetState
   repeat
-    local targetState = state.react(self, ...)
+    targetState = state.react(self, ...)
     if targetState then -- consumed
       if targetState ~= self.state then
         self:_transit(targetState)
@@ -127,6 +129,7 @@ function HierarchicalStateMachine:react(...)
     end
     state = path[i]
   until i < 1
+  return targetState
 end
 
 function HierarchicalStateMachine:_transit(targetState)
