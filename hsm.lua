@@ -11,6 +11,7 @@ function StateMachine:defineStates(states)
 
   function createState(stateName)
     local state = {}
+    state.name = stateName
     for _, actionType in ipairs(types) do
       local methodName = '_' .. actionType .. stateName
       if index[methodName] then
